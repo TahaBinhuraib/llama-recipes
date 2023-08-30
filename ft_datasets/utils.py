@@ -4,6 +4,8 @@
 from tqdm import tqdm
 from itertools import chain
 from torch.utils.data import Dataset
+import json
+
 
 class Concatenator(object):
     def __init__(self, chunk_size=2048):
@@ -63,3 +65,23 @@ class ConcatDataset(Dataset):
     
     def __len__(self):
         return len(self.samples)
+
+
+def filter_notebook(notebook: str, include_outputs=True) -> str:
+    """Filters a notebook to only include the source code."""
+    try:
+        dic = json.loads(notebook)
+    except Exception:
+        return notebook
+
+    cells = dic["cells"]
+    returned_array = []
+    for cell in cells:
+        if include_outputs:
+            try:
+                returned_array.append(cell["source"] + cell["outputs"])
+            except Exception:
+                returned_array.append(cell["source"])
+        else:
+            returned_array.append(cell["source"])
+    return " ".join(returned_array)
