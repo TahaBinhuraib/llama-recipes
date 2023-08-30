@@ -33,7 +33,8 @@ class InstructionDataset(Dataset):
 
         ann = self.ann.iloc[index]
         prompt = ann["Instruction"]
-        example = prompt + '\n' + ann["Notebook"]  # This is the full example
+        output = filter_notebook(ann["Notebook"])
+        example = prompt + '\n' + output  # This is the full example
         prompt = torch.tensor(
             self.tokenizer.encode(prompt), dtype=torch.int64
         )
